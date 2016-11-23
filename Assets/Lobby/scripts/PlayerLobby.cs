@@ -23,18 +23,19 @@ public class PlayerLobby : NetworkLobbyPlayer
 
 	public override void OnClientEnterLobby()
 	{
-		if (playerCanvas == null)
-		{
-			playerCanvas = (Canvas)Instantiate(playerCanvasPrefab, Vector3.zero, Quaternion.identity);
-			playerCanvas.sortingOrder = 1;
-		}
+        Debug.Log("PlayerLobby::OnClientEnterLobby " + this.GetInstanceID());
+//		if (playerCanvas == null)
+//		{
+//			playerCanvas = (Canvas)Instantiate(playerCanvasPrefab, Vector3.zero, Quaternion.identity);
+//			playerCanvas.sortingOrder = 1;
+//		}
 
-		var hooks = playerCanvas.GetComponent<PlayerCanvasHooks>();
-		hooks.panelPos.localPosition = new Vector3(GetPlayerPos(lobbyPlayer.slot), 0, 0);
-		hooks.SetColor(cc.myColor);
-		hooks.SetReady(lobbyPlayer.readyToBegin);
-
-		EventSystem.current.SetSelectedGameObject(hooks.colorButton.gameObject);
+//		var hooks = playerCanvas.GetComponent<PlayerCanvasHooks>();
+//		hooks.panelPos.localPosition = new Vector3(GetPlayerPos(lobbyPlayer.slot), 0, 0);
+//		hooks.SetColor(cc.myColor);
+//		hooks.SetReady(lobbyPlayer.readyToBegin);
+//
+//		EventSystem.current.SetSelectedGameObject(hooks.colorButton.gameObject);
 	}
 
 	public override void OnClientExitLobby()
@@ -69,11 +70,13 @@ public class PlayerLobby : NetworkLobbyPlayer
 
 	public override void OnStartLocalPlayer()
 	{
+        Debug.Log("PlayerLobby::OnStartLocalPlayer " + this.GetInstanceID());
 		if (playerCanvas == null)
 		{
 			playerCanvas = (Canvas)Instantiate(playerCanvasPrefab, Vector3.zero, Quaternion.identity);
 			playerCanvas.sortingOrder = 1;
 		}
+        Debug.Log("PlayerLobby::OnStartLocalPlayer 2 " + this.playerCanvas);
 
 		// setup button hooks
 		var hooks = playerCanvas.GetComponent<PlayerCanvasHooks>();
@@ -84,10 +87,13 @@ public class PlayerLobby : NetworkLobbyPlayer
 		hooks.OnReadyHook = OnGUIReady;
 		hooks.OnRemoveHook = OnGUIRemove;
 		hooks.SetLocalPlayer();
+
+        EventSystem.current.SetSelectedGameObject(hooks.colorButton.gameObject);
 	}
 
 	void OnDestroy()
 	{
+        Debug.Log ("PlayerLobby::OnDestroy");
 		if (playerCanvas != null)
 		{
 			Destroy(playerCanvas.gameObject);
@@ -126,8 +132,11 @@ public class PlayerLobby : NetworkLobbyPlayer
 
 	void OnGUIReady()
 	{
-		if (isLocalPlayer)
-			lobbyPlayer.SendReadyToBeginMessage();
+        if (isLocalPlayer) {
+            Debug.Log ("PlayerLobby::OnGUIReady");
+            lobbyPlayer.SendReadyToBeginMessage();
+        }
+			
 	}
 
 	void OnGUIRemove()

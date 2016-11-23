@@ -21,13 +21,17 @@ public class PlayerCanvasHooks : MonoBehaviour
 
 	void Awake()
 	{
+        Debug.Log("PlayerCanvasHooks::Awake " + this.GetInstanceID());
 		removeButton.gameObject.SetActive(false);
 	}
 
 	public void UIReady()
 	{
-		if (OnReadyHook != null)
-			OnReadyHook.Invoke();
+        if (OnReadyHook != null) {
+            Debug.Log ("PlayerCanvasHooks::UIReady");
+            OnReadyHook.Invoke();
+        }
+			
 	}
 
 	public void UIColorChange()

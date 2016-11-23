@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
+using System.Collections.Generic;
 
 [Serializable]
 public class CanvasControl
@@ -227,6 +228,10 @@ public class MatchMakerCanvasControl : CanvasControl
 			(uint)GuiLobbyManager.s_Singleton.maxPlayers, 
 			true, 
 			"", 
+            "",
+            "",
+            0,
+            1,
 			GuiLobbyManager.s_Singleton.OnMatchCreate);
 
 		GuiLobbyManager.s_Singleton.onlineStatus = "Host Match";
@@ -241,21 +246,21 @@ public class MatchMakerCanvasControl : CanvasControl
 	{
 		Hide();
 
-		GuiLobbyManager.s_Singleton.matchMaker.ListMatches(0, 6, "", OnGUIMatchList);
+        GuiLobbyManager.s_Singleton.matchMaker.ListMatches(0, 6, "", true, 0, 0, OnGUIMatchList);
 
 		var host = GuiLobbyManager.s_Singleton.matchMaker.baseUri.ToString();
 		GuiLobbyManager.s_Singleton.connectingCanvas.Show(host);
 	}
 
-	void OnGUIMatchList(ListMatchResponse matchList)
+    void OnGUIMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matchList)
 	{
 		GuiLobbyManager.s_Singleton.connectingCanvas.Hide();
 
-		if (matchList.success)
+		if (success)
 		{
 			GuiLobbyManager.s_Singleton.joinMatchCanvas.Show(matchList);
 		}
-		else if (matchList.matches.Count == 0)
+		else if (matchList.Count == 0)
 		{
 			Debug.LogWarning("No Matched found.");
 			Show();
@@ -278,11 +283,11 @@ public class MatchMakerCanvasControl : CanvasControl
 [Serializable]
 public class JoinMatchCanvasControl : CanvasControl
 {
-	public void Show(ListMatchResponse matchList)
+    public void Show (List<MatchInfoSnapshot> matchList)
 	{
 		base.Show();
 
-		GuiLobbyManager.s_Singleton.matches = matchList.matches;
+        GuiLobbyManager.s_Singleton.matches = matchList;
 
 		var hooks = canvas.GetComponent<JoinMatchHooks>();
 		if (hooks == null)
@@ -296,9 +301,9 @@ public class JoinMatchCanvasControl : CanvasControl
 			hooks.SetMatchName(i, "");
 		}
 
-		for (int i = 0; i < matchList.matches.Count; i++)
+		for (int i = 0; i < matchList.Count; i++)
 		{
-			var match = matchList.matches[i];
+			var match = matchList[i];
 			hooks.SetMatchName(i, match.name);
 		}
 
@@ -322,6 +327,10 @@ public class JoinMatchCanvasControl : CanvasControl
 		GuiLobbyManager.s_Singleton.matchMaker.JoinMatch(
 			GuiLobbyManager.s_Singleton.matches[index].networkId, 
 			"", 
+            "",
+            "",
+            0,
+            0,
 			GuiLobbyManager.s_Singleton.OnMatchJoined);
 
 		Hide();
